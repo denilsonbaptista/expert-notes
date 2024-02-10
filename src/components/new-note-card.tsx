@@ -1,7 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { FormEvent, useState } from 'react'
 import { toast } from 'sonner'
+import { ChangeEvent } from 'react'
+import { FormEvent, useState } from 'react'
 
 interface NewNoteCardProps {
   onNoteCreated: (content: string) => void

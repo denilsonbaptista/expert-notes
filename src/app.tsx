@@ -1,7 +1,10 @@
-import { useState } from 'react'
 import logo from './assets/logo-nlw-expert.svg'
-import { NewNoteCard } from './components/new-note-card'
+
+import { useState } from 'react'
+import { ChangeEvent } from 'react'
+
 import { NoteCard } from './components/note-card'
+import { NewNoteCard } from './components/new-note-card'
 
 interface Note {
   id: string
@@ -11,7 +14,7 @@ interface Note {
 
 export function App() {
   const [search, setSearch] = useState('')
-  const [notes, setNote] = useState<Note>(() => {
+  const [notes, setNote] = useState<Note[]>(() => {
     const notesOnStorage = localStorage.getItem('notes')
 
     if (notesOnStorage) {
