@@ -1,27 +1,42 @@
+// Importando os componentes necessários do Radix UI para o diálogo
 import * as Dialog from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
-import { toast } from 'sonner'
-import { ChangeEvent } from 'react'
-import { FormEvent, useState } from 'react'
 
+// Importando o ícone 'X' de lucide-react para o botão de fechar
+import { X } from 'lucide-react'
+
+// Importando o módulo 'toast' de sonner para exibir mensagens de notificação
+import { toast } from 'sonner'
+
+// Importando os tipos ChangeEvent da biblioteca React
+import { ChangeEvent } from 'react'
+import { FormEvent, useState } from 'react' // Importando FormEvent do React para lidar com eventos de formulário e o hook useState
+
+// Definindo a interface para as props do componente NewNoteCard
 interface NewNoteCardProps {
   onNoteCreated: (content: string) => void
 }
 
+// Verificando se a API de Reconhecimento de Voz está disponível no navegador
 const SpeechRecognitionAPI =
   window.SpeechRecognition || window.webkitSpeechRecognition
 
+// Criando uma instância da API de Reconhecimento de Voz
 const speechRecognition = new SpeechRecognitionAPI()
 
+// Definindo o componente NewNoteCard
 export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
+  // Definindo estados para o status da gravação, exibição do tutorial e conteúdo da nota
   const [isRecording, setIsRecording] = useState(false)
+
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(true)
   const [content, setContent] = useState('')
 
+  // Função para começar a edição da nota
   function handleStartEditor() {
     setShouldShowOnboarding(false)
   }
 
+  // Função que me permite escrever uma nota
   function handleContentChanged(event: ChangeEvent<HTMLTextAreaElement>) {
     setContent(event.target.value)
 
@@ -30,8 +45,9 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
     }
   }
 
+  // Função para salvar a nota
   function handleSaveNote(event: FormEvent) {
-    event.preventDefault()
+    event.preventDefault() // Não fazer o padrão formulário que é enviar quando eu clico no botão
 
     if (content === '') {
       return
@@ -42,10 +58,13 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
     setContent('')
     setShouldShowOnboarding(true)
 
+    // Exibindo uma mensagem de sucesso ao salvar a nota
     toast.success('Nota criada com sucesso!')
   }
 
+  // Função para começar a gravação da nota por voz
   function handleStartRecording() {
+    // Verificando se a API de Reconhecimento de Voz está disponível
     const isSpeechRecognitionAPIAvailable =
       'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
 
@@ -57,11 +76,13 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
     setIsRecording(true)
     setShouldShowOnboarding(false)
 
+    // Configurando a instância de Reconhecimento de Voz
     speechRecognition.lang = 'pt-BR'
     speechRecognition.continuous = true
     speechRecognition.maxAlternatives = 1
     speechRecognition.interimResults = true
 
+    // Lidando com os resultados do Reconhecimento de Voz
     speechRecognition.onresult = event => {
       const transcription = Array.from(event.results).reduce((text, result) => {
         return text.concat(result[0].transcript)
@@ -70,13 +91,16 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
       setContent(transcription)
     }
 
+    // Lidando com erros do Reconhecimento de Voz
     speechRecognition.onerror = event => {
       console.error(event)
     }
 
+    // Iniciando a gravação
     speechRecognition.start()
   }
 
+  // Função para parar a gravação da nota por voz
   function handleStopRecording() {
     setIsRecording(false)
 
@@ -85,6 +109,7 @@ export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
     }
   }
 
+  // Retornando a estrutura do componente NewNoteCard
   return (
     <Dialog.Root>
       <Dialog.Trigger className="rounded-md flex flex-col bg-slate-700 text-left p-5 gap-3 outline-none hover:ring-2 hover:ring-slate-600 focus-visible:ring-2 focus-visible:ring-lime-400">
